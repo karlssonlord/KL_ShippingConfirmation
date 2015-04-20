@@ -27,19 +27,33 @@ class KL_ShippingConfirmation_Model_Cron
      */
     public function sendEmails()
     {
-        $shipments = Mage::getModel('sales/order_shipment')
-            ->getCollection()
-            ->addFieldToFilter('email_sent', array('null' => true))
-            ->addFieldToFilter('created_at', array('from' => '2014-10-01'));
+        if (Mage::getStoreConfig('sales_email/shipment/shippingconfirmation_is_active')) {
+            $fromDate = Mage::getStoreConfig('sales_email/shipment/shippingconfirmation_from_date');
 
-        foreach ($shipments as $_shipment) {
-            if ($_shipment->getTracksCollection()->getSize() > 0) {
-                try {
-                    $_shipment->sendEmail();
-                    $_shipment->setEmailSent(true);
-                    $_shipment->save();
-                } catch (Exception $e) {
-                    Mage::logException($e);
+            $shipments = Mage::getModel('sales/order_shipment')
+                ->getCollection()
+                ->addFieldToFilter('email_sent', array('null' => true));
+
+            if ($fromDate) {
+                $shipments = $shipments->addFieldToFilter('created_at', array('from' => $fromDate));
+            }
+
+            foreach ($shipments as $_shipment) {
+                if ($_shipment->getTracksCollection()->getSize() > 0) {
+                    try {
+                        $_shipment->sendEmail();
+                        $_shipment->setEmailSent(true);
+                        $_shipment->save();
+
+                        Mage::log(
+                            sprintf('Sent email for shipment %s', $_shipment->getIncrementId()),
+                            null,
+                            'shippingconfirmation.log',
+                            true
+                        );
+                    } catch (Exception $e) {
+                        Mage::logException($e);
+                    }
                 }
             }
         }
