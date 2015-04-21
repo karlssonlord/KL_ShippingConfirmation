@@ -24,6 +24,25 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
                         </shippingconfirmation_from_date>
+                        <shippingconfirmation_treshold translate="label,comment">
+                            <label>Treshold</label>
+                            <comment>How many seconds to wait after a shipment has been created before trying to send any email by cron</comment>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-number</validate>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </shippingconfirmation_treshold>
+                        <shippingconfirmation_require_tracking translate="label,comment">
+                            <label>Require tracking codes to send email</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>93</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </shippingconfirmation_require_tracking>
                     </fields>
                 </shipment>
             </groups>

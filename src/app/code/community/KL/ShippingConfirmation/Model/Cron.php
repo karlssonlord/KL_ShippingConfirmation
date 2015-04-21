@@ -28,7 +28,11 @@ class KL_ShippingConfirmation_Model_Cron
     public function sendEmails()
     {
         if (Mage::getStoreConfig('sales_email/shipment/shippingconfirmation_is_active')) {
+            $trackinCodeIsRequired = Mage::getStoreConfig('sales_email/shipment/shippingconfirmation_require_tracking');
+            $treshold = (int) Mage::getStoreConfig('sales_email/shipment/shippingconfirmation_treshold');
+
             $fromDate = Mage::getStoreConfig('sales_email/shipment/shippingconfirmation_from_date');
+            $toDate = time() - $treshold;
 
             $shipments = Mage::getModel('sales/order_shipment')
                 ->getCollection()
@@ -38,8 +42,10 @@ class KL_ShippingConfirmation_Model_Cron
                 $shipments = $shipments->addFieldToFilter('created_at', array('from' => $fromDate));
             }
 
+            $shipments = $shipments->addFieldToFilter('created_at', array('to' => $toDate, 'datetime' => true));
+
             foreach ($shipments as $_shipment) {
-                if ($_shipment->getTracksCollection()->getSize() > 0) {
+                if (!$trackinCodeIsRequired || ($trackinCodeIsRequired && $_shipment->getTracksCollection()->getSize() > 0)) {
                     try {
                         $_shipment->sendEmail();
                         $_shipment->setEmailSent(true);
