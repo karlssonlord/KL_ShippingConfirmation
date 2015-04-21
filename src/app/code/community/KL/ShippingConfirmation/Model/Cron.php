@@ -29,10 +29,10 @@ class KL_ShippingConfirmation_Model_Cron
     {
         if (Mage::getStoreConfig('sales_email/shipment/shippingconfirmation_is_active')) {
             $trackinCodeIsRequired = Mage::getStoreConfig('sales_email/shipment/shippingconfirmation_require_tracking');
-            $treshold = (int) Mage::getStoreConfig('sales_email/shipment/shippingconfirmation_treshold');
+            $threshold = (int) Mage::getStoreConfig('sales_email/shipment/shippingconfirmation_threshold');
 
             $fromDate = Mage::getStoreConfig('sales_email/shipment/shippingconfirmation_from_date');
-            $toDate = time() - $treshold;
+            $toDate = time() - $threshold;
 
             $shipments = Mage::getModel('sales/order_shipment')
                 ->getCollection()
